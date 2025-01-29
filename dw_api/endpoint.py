@@ -15,12 +15,15 @@ QueryFunctionType = Callable[[Any], Query]
 def filter_command_function(obj: Any) -> Tuple[bool, Type[Command]]:
     if callable(obj):
         hints = get_type_hints(obj)
-        if (hints.get('return') is NoneType and len(hints) == 2) or (
-            hints.get('return') is None and len(hints) == 1
+        params = list(hints.values())
+        if (
+            len(hints) >= 1
+            and issubclass(params[0], Command)
+            and (
+                hints.get('return') is NoneType or hints.get('return') is None
+            )
         ):
-            for param in hints.values():
-                if issubclass(param, Command):
-                    return True, param
+            return True, params[0]
     return False, None
 
 
@@ -32,7 +35,8 @@ def is_command_function(obj: Any) -> bool:
 def filter_query_function(obj: Any) -> Tuple[bool, Type[Query]]:
     if callable(obj):
         hints = get_type_hints(obj)
-        if issubclass(hints.get('return'), Query) and len(hints) == 1:
+        return_type = hints.get('return')
+        if return_type is not None and issubclass(return_type, Query):
             return True, hints.get('return')
     return False, None
 

@@ -31,6 +31,5 @@ ghp-import = "^2.1.0"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.plugins."ports"]
-"test-notify" = "dw_events.notify:notify_send"
-"tasker" = "dw_events.notify:Tasker"
+[tool.poetry.plugins."modules"]
+"dw-api" = "dw_api"

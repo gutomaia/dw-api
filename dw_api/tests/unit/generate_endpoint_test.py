@@ -83,6 +83,8 @@ class GenerateEndpointTest(GenerateEndpointSpec, TestCase):
         self.result = self.app(instance)
 
     def assert_endpoints_length(self, size):
+        for route in self.app.routes:
+            print('route', route)
         self.assertEqual(len(self.app.routes), size)
 
     def assert_result_code(self, code):

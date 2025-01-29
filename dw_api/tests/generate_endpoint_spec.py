@@ -1,5 +1,6 @@
-from dw_core.cqrs import Command, Query
+from dw_core.cqrs import Command, Query, Event
 from typing import List
+import inject
 
 
 class GenerateEndpointSpec:
@@ -109,6 +110,71 @@ class GenerateEndpointSpec:
             return ListUsers(users=['root'])
 
         self.given_port(get_users)
+
+        self.when_auto_generate_endpoints()
+
+        self.assert_endpoints_length(1)
+
+    def test_generate_query_with_repository(self):
+        class ListCars(Query):
+            cars: List[str]
+
+        class CarRepository:
+            def get_cars(self):
+                return ['mustang']
+
+        def get_cars(repository=CarRepository()) -> ListCars:
+            return repository.get_cars()
+
+        self.given_port(get_cars)
+
+        self.when_auto_generate_endpoints()
+
+        self.assert_endpoints_length(1)
+
+    def test_generate_query_with_dependency_injection_repository(self):
+        class ListCars(Query):
+            cars: List[str]
+
+        class CarRepository:
+            def get_cars(self):
+                return ['mustang']
+
+        @inject.autoparams('repository')
+        def get_cars(repository: CarRepository) -> ListCars:
+            return repository.get_cars()
+
+        self.given_port(get_cars)
+
+        self.when_auto_generate_endpoints()
+
+        self.assert_endpoints_length(1)
+
+    def test_generate_with_event_handler(self):
+        class Notification(Event):
+            message: str
+
+        def notify(notification: Notification):
+            pass
+
+        self.given_port(notify)
+
+        self.when_auto_generate_endpoints()
+
+        self.assert_endpoints_length(0)
+
+    def test_command_with_repository(self):
+        class CreateUser(Command):
+            username: str
+
+        class UserRepository:
+            pass
+
+        @inject.autoparams('repository')
+        def create_user(user: CreateUser, repository: UserRepository):
+            pass
+
+        self.given_port(create_user)
 
         self.when_auto_generate_endpoints()
 
