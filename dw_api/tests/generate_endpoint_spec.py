@@ -1,6 +1,7 @@
-from dw_core.cqrs import Command, Query, Event
 from typing import List
+
 import inject
+from dw_core.cqrs import Command, Event, Query
 
 
 class GenerateEndpointSpec:

@@ -8,7 +8,7 @@ across all automatically generated endpoints.
 from pydantic import BaseModel, Field
 
 
-class CommandAccept(BaseModel):   # status code 202
+class CommandAccept(BaseModel):  # status code 202
     """Response model for accepted commands that will be processed asynchronously.
 
     This model is used when a command is accepted but not yet executed,
@@ -22,7 +22,7 @@ class CommandAccept(BaseModel):   # status code 202
     )
 
 
-class CommandExecuted(BaseModel):   # status code 200
+class CommandExecuted(BaseModel):  # status code 200
     """Response model for synchronously executed commands.
 
     This model is used when a command has been executed immediately,

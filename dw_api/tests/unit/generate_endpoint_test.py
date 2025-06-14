@@ -1,17 +1,18 @@
+from functools import wraps
 from unittest import TestCase
 from unittest.mock import patch
 
-from dw_core.cqrs import Command, Query
-from dw_api.tests.generate_endpoint_spec import GenerateEndpointSpec
-from dw_api.endpoint import auto_generate_endpoint
 import inject
+from dw_core.cqrs import Command, Query
+
+from dw_api.domain import CommandExecuted
+from dw_api.endpoint import auto_generate_endpoint
 from dw_api.ports import (
-    EndpointGenerator,
     CommandFunctionType,
+    EndpointGenerator,
     QueryFunctionType,
 )
-from dw_api.domain import CommandExecuted
-from functools import wraps
+from dw_api.tests.generate_endpoint_spec import GenerateEndpointSpec
 
 
 class App:

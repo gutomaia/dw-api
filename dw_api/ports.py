@@ -5,10 +5,10 @@ the foundation of the Downwind API's endpoint generation system. It provides
 the contract that must be implemented by specific web framework adapters.
 """
 
-from typing import Any, Callable   # ,Type, List, Union
-from dw_core.cqrs import Command, Query
 from abc import ABCMeta, abstractmethod
+from typing import Any, Callable  # ,Type, List, Union
 
+from dw_core.cqrs import Command, Query
 
 __all__ = ['CommandFunctionType', 'QueryFunctionType']
 

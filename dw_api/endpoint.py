@@ -6,12 +6,13 @@ valid handlers and generates appropriate routes through the endpoint generator.
 """
 
 from types import NoneType
-from typing import Callable, Type, Any, get_type_hints, Tuple, Union
-from dw_core.cqrs import Command, Query
-from dw_core.core import get_ports
-from dw_api.ports import EndpointGenerator
-import inject
+from typing import Any, Callable, Tuple, Type, Union, get_type_hints
 
+import inject
+from dw_core.core import get_ports
+from dw_core.cqrs import Command, Query
+
+from dw_api.ports import EndpointGenerator
 
 CommandFunctionType = Union[
     Callable[[Command], NoneType], Callable[[Command], None]
