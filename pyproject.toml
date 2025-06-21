@@ -6,11 +6,12 @@ authors = ["Guto Maia <guto@guto.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-dw-core = {path = "../dw-core"}
+dw-core = "0.0.0"
 pydantic = "^2.11.4"
 inject = "^5.2.1"
 
 [tool.poetry.group.dev.dependencies]
+dw-core = {path = "../dw-core", develop = true}
 bandit = "^1.8.3"
 git-changelog = "^2.5.3"
 m2r = "^0.3.1"
@@ -20,6 +21,7 @@ pytest-watch = "^4.2.0"
 sphinx-autodoc-typehints = "^3.2.0"
 sphinx-multiversion = "^0.2.4"
 sphinx-rtd-theme = "^3.0.2"
+sphinxcontrib-plantuml = "^0.30"
 ghp-import = "^2.1.0"
 black = "^25.1.0"
 isort = "^6.0.1"
