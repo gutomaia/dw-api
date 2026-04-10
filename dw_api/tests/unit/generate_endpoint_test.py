@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 import inject
-from dw_core.cqrs import Command, Query
+from dw_core.cqrs import Command, Query, QueryRequest
 
 from dw_api.domain import CommandExecuted
 from dw_api.endpoint import auto_generate_endpoint
@@ -33,7 +33,12 @@ class FakeEndpointGenerator(EndpointGenerator):
     ):
         self.routes[command] = func
 
-    def generate_query_route(self, query: Query, func: QueryFunctionType):
+    def generate_query_route(
+        self,
+        query: Query,
+        func: QueryFunctionType,
+        query_request: type[QueryRequest] | None = None,
+    ):
         self.routes['default'] = func
 
     def get_app(self):

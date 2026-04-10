@@ -8,7 +8,7 @@ the contract that must be implemented by specific web framework adapters.
 from abc import ABCMeta, abstractmethod
 from typing import Any, Callable  # ,Type, List, Union
 
-from dw_core.cqrs import Command, Query
+from dw_core.cqrs import Command, Query, QueryRequest
 
 __all__ = ['CommandFunctionType', 'QueryFunctionType']
 
@@ -20,7 +20,7 @@ These functions take a Command object as input and return None,
 as commands modify state but don't return values.
 """
 
-QueryFunctionType = Callable[[Any], Query]
+QueryFunctionType = Callable[..., Query]
 """Type definition for query handler functions.
 
 These functions take any input parameters and return a Query object,
@@ -49,12 +49,18 @@ class EndpointGenerator(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def generate_query_route(self, query: Query, func: QueryFunctionType):
+    def generate_query_route(
+        self,
+        query: Query,
+        func: QueryFunctionType,
+        query_request: type[QueryRequest] | None = None,
+    ):
         """Generate a route for handling a query.
 
         Args:
-            query: The Query class to create an endpoint for
+            query: The Query response class to create an endpoint for
             func: The function that handles the query
+            query_request: Optional QueryRequest class used as input model
         """
         pass
 

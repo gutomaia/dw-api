@@ -6,18 +6,19 @@ valid handlers and generates appropriate routes through the endpoint generator.
 """
 
 from types import NoneType
+import inspect
 from typing import Any, Callable, Tuple, Type, Union, get_type_hints
 
 import inject
 from dw_core.core import get_ports
-from dw_core.cqrs import Command, Query
+from dw_core.cqrs import Command, Query, QueryRequest
 
 from dw_api.ports import EndpointGenerator
 
 CommandFunctionType = Union[
     Callable[[Command], NoneType], Callable[[Command], None]
 ]
-QueryFunctionType = Callable[[Any], Query]
+QueryFunctionType = Callable[..., Query]
 
 
 def filter_command_function(obj: Any) -> Tuple[bool, Type[Command]]:
@@ -58,7 +59,9 @@ def is_command_function(obj: Any) -> bool:
     return is_command
 
 
-def filter_query_function(obj: Any) -> Tuple[bool, Type[Query]]:
+def filter_query_function(
+    obj: Any,
+) -> Tuple[bool, type[QueryRequest] | None, Type[Query]]:
     """Identify if an object is a valid query handler function.
 
     Args:
@@ -72,9 +75,30 @@ def filter_query_function(obj: Any) -> Tuple[bool, Type[Query]]:
     if callable(obj):
         hints = get_type_hints(obj)
         return_type = hints.get('return')
-        if return_type is not None and issubclass(return_type, Query):
-            return True, hints.get('return')
-    return False, None
+        if (
+            return_type is None
+            or not isinstance(return_type, type)
+            or not issubclass(return_type, Query)
+        ):
+            return False, None, None
+
+        query_request: type[QueryRequest] | None = None
+        try:
+            sig = inspect.signature(obj)
+            params = list(sig.parameters.values())
+            if params:
+                first_param = params[0]
+                first_type = hints.get(first_param.name)
+                if (
+                    isinstance(first_type, type)
+                    and issubclass(first_type, QueryRequest)
+                ):
+                    query_request = first_type
+        except (TypeError, ValueError):
+            query_request = None
+
+        return True, query_request, return_type
+    return False, None, None
 
 
 @inject.autoparams('generator')
@@ -95,9 +119,11 @@ def auto_generate_endpoint(generator: EndpointGenerator):
             generator.generate_command_route(command, port)
             continue
         else:
-            is_query, query = filter_query_function(port)
+            is_query, query_request, query = filter_query_function(port)
             if is_query:
-                generator.generate_query_route(query, port)
+                generator.generate_query_route(
+                    query, port, query_request=query_request
+                )
                 continue
 
     return generator.get_app()
