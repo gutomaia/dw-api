@@ -18,7 +18,7 @@ class CommandAccept(BaseModel):  # status code 202
     accepted: bool = Field(
         title='Command Accepted',
         description='Defines the acceptance of the command',
-        example='True/False',
+        json_schema_extra={'example': 'True/False'},
     )
 
 
@@ -32,5 +32,5 @@ class CommandExecuted(BaseModel):  # status code 200
     accepted: bool = Field(
         title='Command Accepted',
         description='Defines the acceptance of the command',
-        example='True/False',
+        json_schema_extra={'example': 'True/False'},
     )
