@@ -6,7 +6,7 @@ the contract that must be implemented by specific web framework adapters.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, Callable  # ,Type, List, Union
+from typing import Callable  # ,Type, List, Union
 
 from dw_core.cqrs import Command, Query, QueryRequest
 

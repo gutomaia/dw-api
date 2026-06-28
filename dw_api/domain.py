@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 
 
 class CommandAccept(BaseModel):  # status code 202
-    """Response model for accepted commands that will be processed asynchronously.
+    """Response model for accepted commands that will be processed async.
 
     This model is used when a command is accepted but not yet executed,
     typically returning a 202 Accepted status code.

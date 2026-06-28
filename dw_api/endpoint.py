@@ -5,13 +5,23 @@ endpoints from command and query handlers. It uses type inspection to identify
 valid handlers and generates appropriate routes through the endpoint generator.
 """
 
-from types import NoneType
 import inspect
-from typing import Any, Callable, Tuple, Type, Union, get_type_hints
+from types import NoneType
+from typing import (
+    Any,
+    Callable,
+    Tuple,
+    Type,
+    Union,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 import inject
 from dw_core.core import get_ports
 from dw_core.cqrs import Command, Query, QueryRequest
+from pydantic import BaseModel
 
 from dw_api.ports import EndpointGenerator
 
@@ -39,7 +49,9 @@ def filter_command_function(obj: Any) -> Tuple[bool, Type[Command]]:
             len(hints) >= 1
             and issubclass(params[0], Command)
             and (
-                hints.get('return') is NoneType or hints.get('return') is None
+                hints.get('return') is NoneType
+                or hints.get('return') is None
+                or hints.get('return') is dict
             )
         ):
             return True, params[0]
@@ -61,7 +73,7 @@ def is_command_function(obj: Any) -> bool:
 
 def filter_query_function(
     obj: Any,
-) -> Tuple[bool, type[QueryRequest] | None, Type[Query]]:
+) -> Tuple[bool, type[QueryRequest] | None, Any]:
     """Identify if an object is a valid query handler function.
 
     Args:
@@ -75,10 +87,23 @@ def filter_query_function(
     if callable(obj):
         hints = get_type_hints(obj)
         return_type = hints.get('return')
-        if (
-            return_type is None
-            or not isinstance(return_type, type)
-            or not issubclass(return_type, Query)
+
+        is_model_return = isinstance(return_type, type) and issubclass(
+            return_type, BaseModel
+        )
+        is_list_model_return = False
+        if not is_model_return and return_type is not None:
+            origin = get_origin(return_type)
+            if origin is list:
+                args = get_args(return_type)
+                is_list_model_return = (
+                    len(args) == 1
+                    and isinstance(args[0], type)
+                    and issubclass(args[0], BaseModel)
+                )
+
+        if return_type is None or (
+            not is_model_return and not is_list_model_return
         ):
             return False, None, None
 
@@ -89,9 +114,8 @@ def filter_query_function(
             if params:
                 first_param = params[0]
                 first_type = hints.get(first_param.name)
-                if (
-                    isinstance(first_type, type)
-                    and issubclass(first_type, QueryRequest)
+                if isinstance(first_type, type) and issubclass(
+                    first_type, QueryRequest
                 ):
                     query_request = first_type
         except (TypeError, ValueError):
