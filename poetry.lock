@@ -369,6 +369,23 @@ files = [
 ]
 
 [[package]]
+name = "dw-auth"
+version = "0.0.0"
+description = "Downwind Auth"
+optional = false
+python-versions = "^3.12"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.dependencies]
+dw-core = {path = "../dw-core", develop = true}
+
+[package.source]
+type = "directory"
+url = "../dw-auth"
+
+[[package]]
 name = "dw-core"
 version = "0.0.0"
 description = "Downwind Core"
@@ -403,6 +420,25 @@ pydantic = "^2.11.4"
 [package.source]
 type = "directory"
 url = "../dw-featureflag"
+
+[[package]]
+name = "dw-settings"
+version = "0.0.0"
+description = "Downwind Settings"
+optional = false
+python-versions = "^3.12"
+groups = ["dev"]
+files = []
+develop = true
+
+[package.dependencies]
+dw-auth = {path = "../dw-auth", develop = true}
+dw-core = {path = "../dw-core"}
+pydantic = "^2.11.4"
+
+[package.source]
+type = "directory"
+url = "../dw-settings"
 
 [[package]]
 name = "flake8"
@@ -1500,4 +1536,4 @@ watchmedo = ["PyYAML (>=3.10)"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "4c4962d083bfdfabfa3991d3893969edde4eade50a8b9fb605ed374c08a210e8"
+content-hash = "7eb5227001b75ed6bca1138c5f17af533f22cf4998a59bf6e48698027496785e"
